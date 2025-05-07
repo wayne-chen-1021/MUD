@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>MUD 遊戲</title>
+    <style>
+        #log {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+            height: 200px;
+            overflow-y: scroll;
+            white-space: pre-wrap;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>MUD 冒險世界</h1>
+
+    <!-- 名字輸入 -->
+    <div id="name-section">
+        <input type="text" id="playerName" placeholder="請輸入你的名字...">
+        <button onclick="startGame()">開始冒險</button>
+    </div>
+
+    <!-- 遊戲區塊 -->
+    <div id="game-section" style="display:none;">
+        <input type="text" id="command" placeholder="輸入指令...">
+        <button onclick="sendCommand()">送出</button>
+        <div id="log"></div>
+    </div>
+
+    <script>
+        function startGame() {
+            const name = document.getElementById("playerName").value;
+            fetch('/api/player/name', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            })
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById("name-section").style.display = "none";
+                document.getElementById("game-section").style.display = "block";
+                const log = document.getElementById("log");
+                log.innerText += data + "\n\n";
+                log.scrollTop = log.scrollHeight;
+            });
+        }
+
+        function sendCommand() {
+            const command = document.getElementById("command").value.trim();
+            const log = document.getElementById("log");
+
+            if (command.startsWith("go ")) {
+                const direction = command.slice(3);
+                fetch('/api/player/position', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ direction })
+                })
+                .then(res => res.text())
+                .then(data => {
+                    log.innerText += "> " + command + "\n" + data + "\n\n";
+                    log.scrollTop = log.scrollHeight;
+                });
+            } else if (command.startsWith("attack ")) {
+                const target = command.slice(7);
+                fetch('/api/player/attack', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target })
+                })
+                .then(res => res.text())
+                .then(data => {
+                    log.innerText += "> " + command + "\n" + data + "\n\n";
+                    log.scrollTop = log.scrollHeight;
+                });
+            } else if (command.startsWith("use item ")) {
+                const itemName = command.slice(9);
+                fetch('/api/player/use-item', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ itemName })
+                })
+                .then(res => res.text())
+                .then(data => {
+                    log.innerText += "> " + command + "\n" + data + "\n\n";
+                    log.scrollTop = log.scrollHeight;
+                });
+            } else if (command === "pickup") {
+                fetch('/api/player/pickup', {
+                    method: 'POST'
+                })
+                .then(res => res.text())
+                .then(data => {
+                    log.innerText += "> " + command + "\n" + data + "\n\n";
+                    log.scrollTop = log.scrollHeight;
+                });
+            } else if (command.startsWith("use skill ")) {
+                const parts = command.slice(10).split(" to ");
+                const skillName = parts[0].trim();
+                const target = parts[1]?.trim() || "";
+
+                fetch('/api/player/use-skill', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ skillName, target })
+                })
+                .then(res => res.text())
+                .then(data => {
+                    log.innerText += "> " + command + "\n" + data + "\n\n";
+                    log.scrollTop = log.scrollHeight;
+                });
+            } else {
+                log.innerText += "> " + command + "\n" + "未定義指令。\n\n";
+                log.scrollTop = log.scrollHeight;
+            }
+
+            document.getElementById("command").value = "";
+        }
+    </script>
+</body>
+</html>
