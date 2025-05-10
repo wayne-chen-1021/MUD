@@ -4,11 +4,14 @@ import com.example.mudgame.model.Item;
 import com.example.mudgame.model.Monster;
 import com.example.mudgame.model.Player;
 import com.example.mudgame.model.Room;
+import com.example.mudgame.repository.*;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
 
+import java.util.Optional;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +19,8 @@ import java.util.Map;
 
 @Service
 public class GameService {
+    @Autowired
+    private PlayerRepository playerRepository;
 
     private Player player;
     private Map<String, Room> rooms = new HashMap<>();
@@ -54,14 +59,14 @@ public class GameService {
 
     // 歡迎玩家
     public String setPlayerName(String name) {
-        /*Optional<Player> existing = playerRepository.findByName(name);
-        
+        Optional<Player> existing = playerRepository.findByName(name);
+    
         if (existing.isPresent()) {
             player = existing.get();
             return "歡迎回來，" + player.getName() + "！你目前在 " +
                    rooms.get(player.getCurrentRoom()).getDescription();
-        }*/
-        
+        }
+    
         // 新玩家
         player = new Player(name);
         player.setHealth(100);
@@ -70,7 +75,10 @@ public class GameService {
         player.setCurrentRoom("room1");
         player.setSkills(new ArrayList<>(List.of("fireball")));
         player.setInventory(new ArrayList<>());
-        
+    
+        // 儲存到資料庫
+        playerRepository.save(player);
+    
         return "歡迎你，" + name + "！冒險即將開始...\n" +
                rooms.get("room1").getDescription();
     }
@@ -87,7 +95,8 @@ public class GameService {
     
         Room nextRoom = rooms.get(nextRoomId);
         player.moveTo(nextRoomId);
-  
+        // 更新玩家位置
+        playerRepository.save(player);
         return "你往 " + direction + " 移動。\n" + nextRoom.getDescription();
     }
     

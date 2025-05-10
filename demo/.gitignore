@@ -31,3 +31,11 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Docker volumes
+volumes/
+*.log
+*.pid
+
+# Others
+*.db
