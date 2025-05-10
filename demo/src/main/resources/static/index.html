@@ -131,11 +131,13 @@
                     log.innerText += "> " + command + "\n" + data + "\n\n";
                     log.scrollTop = log.scrollHeight;
 
-                    // 回到名稱輸入畫面
-                    document.getElementById("name-section").style.display = "block";
-                    document.getElementById("game-section").style.display = "none";
-                    document.getElementById("playerName").value = ""; // 清空玩家名稱輸入框
-                    log.innerText = ""; // 清空日誌
+                    // 等待 3 秒再切換畫面和清空輸入
+                    setTimeout(() => {
+                        document.getElementById("name-section").style.display = "block";
+                        document.getElementById("game-section").style.display = "none";
+                        document.getElementById("playerName").value = ""; // 清空玩家名稱輸入框
+                        log.innerText = ""; // 清空日誌
+                    }, 3000); // 延遲 3000 毫秒 = 3 秒
                 });
             } else {
                 log.innerText += "> " + command + "\n" + "未定義指令。\n\n";

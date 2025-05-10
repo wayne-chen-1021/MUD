@@ -73,7 +73,7 @@ public class GameService {
         player.setMaxHealth(100);
         player.setAttackPower(10);
         player.setCurrentRoom("room1");
-        player.setSkills(new ArrayList<>(List.of("fireball")));
+        player.setSkills(new ArrayList<>(List.of("fireball"))); // 初始化技能
         player.setInventory(new ArrayList<>());
     
         // 儲存到資料庫
@@ -146,11 +146,23 @@ public class GameService {
         return result.toString();
     }
     
+    public String addSkill(String skillName) {
+
+        if (player.hasSkill(skillName)) {
+            return "你已經學會了技能 " + skillName + "！";
+        }
+
+        player.addSkill(skillName);
+        playerRepository.save(player); // 更新資料庫
+
+        return "你學會了新技能 " + skillName + "！";
+    }
+
     public String useSkill(String skillName, String targetName) {
-        if (!player.hasSkill(skillName)) {
+        if (!playerRepository.existsSkillByPlayerName(player.getName(), skillName)) {
             return "你不會這個技能。";
         }
-    
+
         Room currentRoom = rooms.get(player.getCurrentRoom());
         Monster monster = currentRoom.getMonster();
     
@@ -230,6 +242,7 @@ public class GameService {
         public String exitGame() {
         // 重置玩家狀態
         player = null; // 清除當前玩家
+        init(); // 重新初始化遊戲狀態
         return "遊戲已結束。感謝遊玩！\n請重新輸入玩家名稱以繼續冒險。";
     }
 
