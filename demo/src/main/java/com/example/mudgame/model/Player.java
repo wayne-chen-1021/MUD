@@ -3,27 +3,33 @@ package com.example.mudgame.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.*;
 
+
+@Entity
+@Table(name = "players")
 public class Player {
-
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
     private int health;
     private int maxHealth;
     private int attackPower;
+
+    @Column(name = "current_room")
     private String currentRoom;
 
-    private List<String> skills;
+    // 忽略 skills 和 inventory 先不儲存進 DB，除非你另外建表（下面補充說明）
+    @Transient
+    private List<String> skills = new ArrayList<>();
 
-    private List<Item> inventory;
+    @Transient
+    private List<Item> inventory = new ArrayList<>();
 
     public Player(String name) {
         this.name = name;
@@ -79,6 +85,9 @@ public class Player {
     }
 
     //Setter
+    public void setId(Long id) {
+        this.id = id;
+    }
     public void setHealth(int health) {
         this.health = health;
     }
