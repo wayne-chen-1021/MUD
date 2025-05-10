@@ -24,8 +24,10 @@ public class Player {
     @Column(name = "current_room")
     private String currentRoom;
 
-    // 忽略 skills 和 inventory 先不儲存進 DB，除非你另外建表（下面補充說明）
-    @Transient
+    // 使用 @ElementCollection 儲存技能列表
+    @ElementCollection
+    @CollectionTable(name = "player_skills", joinColumns = @JoinColumn(name = "player_id"))
+    @Column(name = "skill")
     private List<String> skills = new ArrayList<>();
 
     @Transient
