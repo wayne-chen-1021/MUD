@@ -16,7 +16,12 @@ public class Item {
     public String getName() {
         return name;
     }
-
+    public String getChineseName(String name) {
+        if (name.equals("potion")) {
+            return "藥水";
+        }
+        return "未知道具";
+    }
     public String getType() {
         return type;
     }

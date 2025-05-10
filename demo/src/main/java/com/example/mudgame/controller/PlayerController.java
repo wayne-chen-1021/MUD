@@ -9,6 +9,9 @@ import com.example.mudgame.dto.UseItemRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
 @RequestMapping("/api/player")
@@ -40,6 +43,14 @@ public class PlayerController {
     @PostMapping("/name")
     public String setPlayerName(@RequestBody NameRequest request) {
         return gameService.setPlayerName(request.getName());
+    }
+    @PostMapping("/look")
+    public String look() {
+        return gameService.look();
+    }
+    @PostMapping("/exit")
+    public String exitGame() {
+        return gameService.exitGame();
     }
 
 }

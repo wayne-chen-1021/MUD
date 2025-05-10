@@ -45,7 +45,7 @@ public class GameService {
 
         room3.addExit("west", "room2");
         room3.addExit("north", "room4");
-        room3.setItem(new Item("治療藥水", "healing", 20));
+        room3.setItem(new Item("potion", "healing", 20));
 
         room4.addExit("south", "room3");
         room4.setMonster(troll);
@@ -195,21 +195,21 @@ public class GameService {
 
     // 使用道具
     public String useItem(String itemName) {
-    Item item = player.getItemByName(itemName);
+        Item item = player.getItemByName(itemName);
 
-    if (item == null) {
-        return "你沒有 " + itemName + "。";
+        if (item == null) {
+            return "你沒有這項道具。";
+        }
+
+        if (item.getType().equalsIgnoreCase("healing")) {
+            player.heal(item.getValue());
+            player.removeItemByName(itemName);
+
+            return "你使用了【" + item.getChineseName(item.getName()) + "】回復了 " + item.getValue() + " 點血量。你目前血量為 " + player.getHealth() + "。";
+        }
+
+        return "這個道具無法使用或類型不支援。";
     }
-
-    if (item.getType().equals("healing")) {
-        player.heal(item.getValue());
-        player.removeItemByName(itemName);
-
-        return "你使用了 " + item.getName() + "，回復了 " + item.getValue() + " 點血量。你目前血量為 " + player.getHealth() + "。";
-    }
-
-    return "這個道具無法使用或類型不支援。";
-}
 
     // 拾取道具
     public String pickupItem() {
@@ -223,12 +223,45 @@ public class GameService {
         player.addItem(item);
         currentRoom.setItem(null);
 
-        return "你撿起了 " + item.getName() + "，並放進背包。";
+        return "撿起了" + item.getChineseName(item.getName()) + "放進背包。";
     }
     
     // 重新開始遊戲
-    public void resetPlayer() {
-        player.setHealth(player.getMaxHealth());
-        player.moveTo("room1");
+        public String exitGame() {
+        // 重置玩家狀態
+        player = null; // 清除當前玩家
+        return "遊戲已結束。感謝遊玩！\n請重新輸入玩家名稱以繼續冒險。";
+    }
+
+    // 查看當前房間
+    public String look() {
+        StringBuilder description = new StringBuilder();
+        Room currentRoom = rooms.get(player.getCurrentRoom());
+    
+        if (currentRoom == null) {
+            return "無法找到當前房間的資訊！";
+        }
+    
+        description.append("房間描述: ").append(currentRoom.getDescription()).append("\n");
+        // 顯示怪物
+        if (currentRoom.getMonster() != null) {
+            description.append("怪物: ").append(currentRoom.getMonster().getName()).append("\n");
+        } else {
+            description.append("怪物: 無\n");
+        }
+        // 顯示道具
+        if (currentRoom.getItem() != null) {
+            description.append("道具: ").append(currentRoom.getItem().getName()).append("\n");
+        } else {
+            description.append("道具: 無\n");
+        }
+        // 可行進的方向
+        description.append("可行進的方向: ");
+        if (currentRoom.getExits().isEmpty()) {
+            description.append("無\n");
+        } else {
+            description.append(String.join(", ", currentRoom.getExits().keySet())).append("\n");
+        }
+        return description.toString();
     }
 }
