@@ -65,8 +65,8 @@
                     log.innerText += "> " + command + "\n" + data + "\n\n";
                     log.scrollTop = log.scrollHeight;
                 });
-            } else if (command.startsWith("attack ")) {
-                const target = command.slice(7);
+            } else if (command.startsWith("attack to ")) {
+                const target = command.slice(10);
                 fetch('/api/player/attack', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -77,8 +77,8 @@
                     log.innerText += "> " + command + "\n" + data + "\n\n";
                     log.scrollTop = log.scrollHeight;
                 });
-            } else if (command.startsWith("use item ")) {
-                const itemName = command.slice(9);
+            } else if (command.startsWith("use ")) {
+                const itemName = command.slice(4);
                 fetch('/api/player/use-item', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -98,8 +98,8 @@
                     log.innerText += "> " + command + "\n" + data + "\n\n";
                     log.scrollTop = log.scrollHeight;
                 });
-            } else if (command.startsWith("use skill ")) {
-                const parts = command.slice(10).split(" to ");
+            } else if (command.startsWith("skill ")) {
+                const parts = command.slice(6).split(" to ");
                 const skillName = parts[0].trim();
                 const target = parts[1]?.trim() || "";
 
@@ -112,6 +112,30 @@
                 .then(data => {
                     log.innerText += "> " + command + "\n" + data + "\n\n";
                     log.scrollTop = log.scrollHeight;
+                });
+            } else if (command.startsWith("look")) {
+                fetch('/api/player/look', {
+                    method: 'POST'
+                })
+                .then(res => res.text())
+                .then(data => {
+                    log.innerText += "> " + command + "\n" + data + "\n\n";
+                    log.scrollTop = log.scrollHeight;
+                });
+            } else if (command === "exit") {
+                fetch('/api/player/exit', {
+                    method: 'POST'
+                })
+                .then(res => res.text())
+                .then(data => {
+                    log.innerText += "> " + command + "\n" + data + "\n\n";
+                    log.scrollTop = log.scrollHeight;
+
+                    // 回到名稱輸入畫面
+                    document.getElementById("name-section").style.display = "block";
+                    document.getElementById("game-section").style.display = "none";
+                    document.getElementById("playerName").value = ""; // 清空玩家名稱輸入框
+                    log.innerText = ""; // 清空日誌
                 });
             } else {
                 log.innerText += "> " + command + "\n" + "未定義指令。\n\n";

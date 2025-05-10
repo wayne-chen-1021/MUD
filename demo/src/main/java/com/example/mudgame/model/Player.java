@@ -140,21 +140,4 @@ public class Player {
     public String getName() {
         return name;
     }
-
-    @Override 
-    public String toString() {
-        String str = "";
-        str += "玩家ID: " + id + "\n";
-        str += "玩家名稱: " + name + "\n";
-        str += "當前房間: " + currentRoom + "\n";
-        str += "當前血量: " + health + "/" + maxHealth + "\n";
-        str += "攻擊力: " + attackPower + "\n";
-        str += "技能: " + String.join(", ", skills) + "\n";
-        str += "物品: ";
-        for (Item item : inventory) {
-            str += item.getName() + " ";
-        }
-        str += "\n";
-        return str;
-    }
 }
